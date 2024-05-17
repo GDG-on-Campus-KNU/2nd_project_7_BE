@@ -1,6 +1,7 @@
 package com.gdsc.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 public class Education {
 
@@ -10,7 +11,7 @@ public class Education {
     private Long educationID;
 
     @Column(name = "educationLevel", nullable = false)
-    private String educationnLevel;
+    private String educationLevel;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -27,6 +28,15 @@ public class Education {
     @ManyToOne
     @JoinColumn(name = "UserID")
     private User user;
+
+    @Builder
+    public Education(String educationLevel, String status, Double grade, Integer graduationYear, String major){
+        this.educationLevel = educationLevel;
+        this.status = status;
+        this.grade = grade;
+        this.graduationYear = graduationYear;
+        this.major = major;
+    }
 
 
 }

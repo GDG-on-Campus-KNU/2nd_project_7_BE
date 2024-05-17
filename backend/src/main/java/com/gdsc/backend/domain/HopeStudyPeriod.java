@@ -1,6 +1,7 @@
 package com.gdsc.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 public class HopeStudyPeriod {
 
@@ -18,4 +19,10 @@ public class HopeStudyPeriod {
     @ManyToOne
     @JoinColumn(name = "UserID")
     private User user;
+
+    @Builder
+    public HopeStudyPeriod(Integer hopeMonth, Integer hopePeriod){
+        this.hopeMonth = hopeMonth;
+        this.hopePeriod = hopePeriod;
+    }
 }

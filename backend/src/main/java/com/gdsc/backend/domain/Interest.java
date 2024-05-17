@@ -1,6 +1,7 @@
 package com.gdsc.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 public class Interest {
 
@@ -15,4 +16,9 @@ public class Interest {
     @ManyToOne
     @JoinColumn(name = "UserID")
     private User user;
+
+    @Builder
+    public Interest(String type){
+        this.type = type;
+    }
 }
