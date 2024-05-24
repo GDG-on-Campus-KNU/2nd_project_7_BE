@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키 1씩 증가
-    @Column(name = "userID", updatable = false)
-    private Long userID;
+    @Column(name = "UserID", updatable = false)
+    private Long UserID;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -29,6 +31,21 @@ public class User {
 
     @Column(name = "profileImage")
     private String profileImage;
+
+    @OneToMany(mappedBy = "user")
+    private List<CertificationReview> certificationReviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<CertificationFavorite> certificationFavorites = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Studypost> studyposts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<StudypostComment> studypostcomments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<StudypostFavorite> studypostfavorites = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name, String nickname, LocalDate birthDate, String profileImage){
