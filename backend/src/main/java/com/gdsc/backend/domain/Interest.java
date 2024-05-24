@@ -7,8 +7,8 @@ public class Interest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "interestID", updatable = false)
-    private Long interestID;
+    @Column(name = "InterestID", updatable = false)
+    private Long InterestID;
 
     @Column(name = "type")
     private String type;
