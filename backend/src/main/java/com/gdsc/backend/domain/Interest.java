@@ -15,7 +15,7 @@ public class Interest {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 
     @Builder
     public Interest(String type){

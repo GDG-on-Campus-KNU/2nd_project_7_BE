@@ -18,7 +18,7 @@ public class StudypostComment {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 
     @ManyToOne
     @JoinColumn(name = "StudypostID")

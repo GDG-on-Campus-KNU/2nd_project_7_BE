@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class User {
+public class SiteUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키 1씩 증가
     @Column(name = "UserID", updatable = false)
@@ -32,23 +32,23 @@ public class User {
     @Column(name = "profileImage")
     private String profileImage;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "siteUser")
     private List<CertificationReview> certificationReviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "siteUser")
     private List<CertificationFavorite> certificationFavorites = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "siteUser")
     private List<Studypost> studyposts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "siteUser")
     private List<StudypostComment> studypostcomments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "siteUser")
     private List<StudypostFavorite> studypostfavorites = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, String name, String nickname, LocalDate birthDate, String profileImage){
+    public SiteUser(String email, String password, String name, String nickname, LocalDate birthDate, String profileImage){
         this.email = email;
         this.password = password;
         this.name = name;
@@ -57,4 +57,7 @@ public class User {
         this.profileImage = profileImage;
     }
 
+    public SiteUser() {
+
+    }
 }

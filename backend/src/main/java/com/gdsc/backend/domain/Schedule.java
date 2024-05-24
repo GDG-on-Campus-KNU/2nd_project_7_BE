@@ -19,5 +19,5 @@ public class Schedule {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 }

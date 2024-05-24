@@ -27,7 +27,7 @@ public class Education {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 
     @Builder
     public Education(String educationLevel, String status, Double grade, Integer graduationYear, String major){

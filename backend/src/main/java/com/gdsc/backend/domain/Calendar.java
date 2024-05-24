@@ -11,7 +11,7 @@ public class Calendar {
     private Long CalendarID;
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 
     @ManyToOne
     @JoinColumn(name = "CertificationID")

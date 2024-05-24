@@ -14,7 +14,7 @@ public class AcquiredCertification {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 
     @ManyToOne
     @JoinColumn(name = "CertificationID")

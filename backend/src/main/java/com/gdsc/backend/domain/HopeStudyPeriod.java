@@ -18,7 +18,7 @@ public class HopeStudyPeriod {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
-    private User user;
+    private SiteUser siteUser;
 
     @Builder
     public HopeStudyPeriod(Integer hopeMonth, Integer hopePeriod){
