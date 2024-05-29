@@ -17,15 +17,15 @@ public class AddUserRequest {
     private LocalDate birthDate;
     private String profileImage;
 
-    public SiteUser toEntity(){
-        return SiteUser.builder()
-                .email(email)
-                .password(password)
-                .name(name)
-                .nickname(nickname)
-                .birthDate(birthDate)
-                .profileImage(profileImage)
-                .build();
-    }
+//    public SiteUser toEntity(){
+//        return SiteUser.builder()
+//                .email(email)
+//                .password(password)
+//                .name(name)
+//                .nickname(nickname)
+//                .birthDate(birthDate)
+//                .profileImage(profileImage)
+//                .build();
+//    }
 
 }
