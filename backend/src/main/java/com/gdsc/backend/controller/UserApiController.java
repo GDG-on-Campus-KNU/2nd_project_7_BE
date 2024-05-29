@@ -7,6 +7,8 @@ import com.gdsc.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,21 +20,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class UserApiController {
 
+    @Autowired
     private final UserService userService;
 
-    @PostMapping("/user")
-    public String signup(AddUserRequest request) {
-        userService.save(request); //회원가입 메서드 호출
-        return "redirect:/login"; // 회원가입 완료 이후에 로그인 페이지로 이동
+    @PostMapping("/signup")
+    public ResponseEntity<String> createUser(@RequestBody AddUserRequest addUserRequest) {
+        userService.save(addUserRequest); // 회원가입 메서드 호출
+        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/login";
+        return new ResponseEntity<>("User logged out successfully", HttpStatus.OK);
     }
 
 }
