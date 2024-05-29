@@ -17,6 +17,6 @@ public class UserDetailService implements UserDetailsService{
     @Override
     public SiteUser loadUserByUsername(String email){
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException((email)));
+                .orElseThrow(() -> new IllegalArgumentException(("User not found with email: " + email)));
     }
 }
