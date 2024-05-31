@@ -16,8 +16,7 @@ public class LoginService implements UserDetailsService{
 
     @Override
     public SiteUser loadUserByUsername(String email) throws UsernameNotFoundException {
-        SiteUser siteUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException(("아이디가 존재하지 않습니다. 회원가입 해주세요")));
+        SiteUser siteUser = userRepository.findByEmail(email);
 
         return SiteUser.builder()
                 .email(siteUser.getEmail())

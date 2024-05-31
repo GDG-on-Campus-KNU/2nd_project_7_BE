@@ -1,85 +1,98 @@
 package com.gdsc.backend.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gdsc.backend.domain.SiteUser;
-import com.gdsc.backend.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
-class JsonEmailPasswordAuthenticationFilterTest {
-    @Autowired
-    MockMvc mockMvc;
+@WebMvcTest(JsonEmailPasswordAuthenticationFilter.class)
+public class JsonEmailPasswordAuthenticationFilterTest {
 
     @Autowired
-    UserRepository userRepository;
+    private MockMvc mockMvc;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    @MockBean
+    private AuthenticationManager authenticationManager;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    @MockBean
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
 
-    private static String KEY_EMAIL = "email";
-    private static String KEY_PASSWORD = "password";
-    private static String USEREMAIL = "ex@naver.com";
-    private static String PASSWORD = "123456789";
+    @MockBean
+    private AuthenticationFailureHandler authenticationFailureHandler;
 
-    private static String LOGIN_URL = "/login";
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private JsonEmailPasswordAuthenticationFilter jsonEmailPasswordAuthenticationFilter;
+
     @BeforeEach
-    private void init(){
-        userRepository.save(SiteUser.builder()
-                        .email(USEREMAIL)
-                        .password(bCryptPasswordEncoder.encode(PASSWORD))
-                        .name("shin")
-                        .nickname("shsh")
-                        .birthDate(LocalDate.of(1990, 1, 1)) // 예시 생년월일
-                        .profileImage("example.com")
-                        .build());
-    }
-
-
-    private Map<String, String> getUsernamePasswordMap(String email, String password) {
-        Map<String, String> map = new HashMap<>();
-        map.put(KEY_EMAIL, email);
-        map.put(KEY_PASSWORD, password);
-        return map;
-    }
-
-    private ResultActions perform(String url, MediaType mediaType, Map<String, String> usernamePasswordMap) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders
-                .post(url)
-                .contentType(mediaType)
-                .content(objectMapper.writeValueAsString(usernamePasswordMap)));
+    public void setUp() {
+        jsonEmailPasswordAuthenticationFilter = new JsonEmailPasswordAuthenticationFilter(
+                objectMapper, authenticationSuccessHandler, authenticationFailureHandler);
+        jsonEmailPasswordAuthenticationFilter.setAuthenticationManager(authenticationManager);
     }
 
     @Test
-    public void 로그인_성공() throws Exception{
-        //given
-        Map<String, String> map = getUsernamePasswordMap(USEREMAIL, PASSWORD);
+    public void testSuccessfulAuthentication() throws Exception {
+        String email = "test@example.com";
+        String password = "password";
+        String requestBody = objectMapper.writeValueAsString(Map.of("email", email, "password", password));
 
-        //when, then
-        MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        verify(authenticationSuccessHandler, times(1)).onAuthenticationSuccess(any(), any(), any());
+    }
+
+    @Test
+    public void testFailedAuthentication() throws Exception {
+        String email = "test@example.com";
+        String password = "wrongpassword";
+        String requestBody = objectMapper.writeValueAsString(Map.of("email", email, "password", password));
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new AuthenticationException("Authentication failed") {});
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+
+        verify(authenticationFailureHandler, times(1)).onAuthenticationFailure(any(), any(), any());
+    }
+
+    @Test
+    public void testUnsupportedContentType() throws Exception {
+        String email = "test@example.com";
+        String password = "password";
+        String requestBody = objectMapper.writeValueAsString(Map.of("email", email, "password", password));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/login")
+                        .contentType("text/plain")
+                        .content(requestBody))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }

@@ -10,7 +10,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
@@ -32,11 +35,16 @@ public class JsonEmailPasswordAuthenticationFilter extends AbstractAuthenticatio
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD); //login 의 요청에, POST로 온 요청에 매칭된다.
 
-    public JsonEmailPasswordAuthenticationFilter(ObjectMapper objectMapper) {
+    public JsonEmailPasswordAuthenticationFilter(ObjectMapper objectMapper,
+                                                 AuthenticationSuccessHandler authenticationSuccessHandler, // 로그인 성공 시 처리할 핸들러
+                                                 AuthenticationFailureHandler authenticationFailureHandler // 로그인 실패 시 처리할 핸들러
+    ){
 
         super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);   // oauth2/login/* 의 요청에, GET으로 온 요청을 처리하기 위해 설정한다.
 
         this.objectMapper = objectMapper;
+        setAuthenticationSuccessHandler(authenticationSuccessHandler);
+        setAuthenticationFailureHandler(authenticationFailureHandler);
     }
 
     @Override
@@ -56,5 +64,25 @@ public class JsonEmailPasswordAuthenticationFilter extends AbstractAuthenticatio
 
         return this.getAuthenticationManager().authenticate(authRequest);
     }
+
+    @Component
+    public static class LoginSuccessHandler implements AuthenticationSuccessHandler {
+        @Override
+        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+            System.out.println("LoginSuccessHandler.onAuthenticationSuccess");
+        }
+    }
+
+    @Component
+    public static class LoginFailureHandler implements AuthenticationFailureHandler {
+        @Override
+        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+            System.out.println("LoginFailureHandler.onAuthenticationFailure");
+            response.setStatus(403);
+        }
+    }
+
+
+
 
 }
