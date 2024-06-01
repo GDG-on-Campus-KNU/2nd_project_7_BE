@@ -15,17 +15,9 @@ public class LoginService implements UserDetailsService{
     private final UserRepository userRepository;
 
     @Override
-    public SiteUser loadUserByUsername(String email) throws UsernameNotFoundException {
-        SiteUser siteUser = userRepository.findByEmail(email);
-
-        return SiteUser.builder()
-                .email(siteUser.getEmail())
-                .password(siteUser.getPassword())
-                .name(siteUser.getName())
-                .birthDate(siteUser.getBirthDate())
-                .nickname(siteUser.getNickname())
-                .profileImage(siteUser.getProfileImage())
-                .build();
+    public SiteUser loadUserByUsername(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException((email)));
 
     }
 }

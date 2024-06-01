@@ -27,4 +27,8 @@ public class SignupService {
                 .build()).getUserID();
 
     }
+    public SiteUser findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+    }
 }
