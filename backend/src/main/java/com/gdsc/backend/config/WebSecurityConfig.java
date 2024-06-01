@@ -9,9 +9,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -40,36 +43,29 @@ public class WebSecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http.csrf().disable()
                 .authorizeRequests()
-                .requestMatchers("/login", "/signup", "/user").permitAll()
+                .requestMatchers("/login", "/signup", "/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .formLogin().disable()
+                .logout()
+                .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); //세션 사용 안함
 
+
+        return http.build();
     }
 
     @Bean
-    public JsonEmailPasswordAuthenticationFilter.LoginSuccessHandler loginSuccessHandler() {
-        return new JsonEmailPasswordAuthenticationFilter.LoginSuccessHandler();
-    }
-
-    @Bean
-    public JsonEmailPasswordAuthenticationFilter.LoginFailureHandler loginFailureHandler() {
-        return new JsonEmailPasswordAuthenticationFilter.LoginFailureHandler();
-    }
-    @Bean
-    public JsonEmailPasswordAuthenticationFilter jsonEmailPasswordAuthenticationFilter() {
-        JsonEmailPasswordAuthenticationFilter filter = new JsonEmailPasswordAuthenticationFilter(objectMapper, loginSuccessHandler, loginFailureHandler);
-        filter.setAuthenticationManager(authenticationManager());
-        return filter;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(bCryptPasswordEncoder());
-        provider.setUserDetailsService(userService);
-        return new ProviderManager(provider);
+    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsService userDetailsService) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(userService)
+                .passwordEncoder(bCryptPasswordEncoder)
+                .and()
+                .build();
     }
 
     @Bean

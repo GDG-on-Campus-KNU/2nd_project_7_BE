@@ -7,17 +7,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor //final or @NotNull이 붙은 필드의 생성자 추가
+@RequiredArgsConstructor
 @Service
-
-//스프링 시큐리티에서 사용자 정보 가져오는 인터페이스
-public class LoginService implements UserDetailsService{
+public class LoginService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public SiteUser loadUserByUsername(String email){
+    public SiteUser loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException((email)));
-
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 }
