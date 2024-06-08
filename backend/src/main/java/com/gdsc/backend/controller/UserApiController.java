@@ -28,7 +28,7 @@ public class UserApiController {
     }
 
     @PostMapping("/certification")
-    public AddCertificationResponse addCertification(@RequestBody AddCertificationRequest request) {
+    public AddUserCertificationResponse addCertification(@RequestBody AddUserCertificationRequest request) {
         return userService.addCertification(request);
     }
 
@@ -37,6 +37,21 @@ public class UserApiController {
     public CertificationReview addCertificationReview(@RequestBody AddCertificationReivewRequest request) {
         return userService.addCertificationReview(request);
     }
+
+    @PutMapping("/certification/{userId}/{acquiredCertificationId}")
+    public ResponseEntity<String> modifyUserCertification(
+            @PathVariable Long userId,
+            @PathVariable Long acquiredCertificationId,
+            @RequestBody ModifyUserCertificationRequest request) {
+
+        boolean isModified = userService.modifyUserCertification(userId, acquiredCertificationId, request);
+        if (isModified) {
+            return ResponseEntity.ok("User certification modified successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User certification not found or does not belong to the user.");
+        }
+    }
+
 
 
 

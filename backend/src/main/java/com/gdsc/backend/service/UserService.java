@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @RequiredArgsConstructor //final or @NotNull이 붙은 필드의 생성자 추가
@@ -54,7 +53,7 @@ public class UserService {
     }
 
     @Transactional
-    public AddCertificationResponse addCertification(AddCertificationRequest requestDTO) {
+    public AddUserCertificationResponse addCertification(AddUserCertificationRequest requestDTO) {
         AcquiredCertification userCertification = new AcquiredCertification();
         Certification certification = certificationRepository.getById(requestDTO.getCertificationId());
 
@@ -65,7 +64,7 @@ public class UserService {
 
         userCertification = acquiredCertificationRepository.save(userCertification);
 
-        return new AddCertificationResponse(true, userCertification.getCertification().toString(), "Certification added successfully.");
+        return new AddUserCertificationResponse(true, userCertification.getCertification().toString(), "Certification added successfully.");
     }
 
     @Transactional
@@ -92,5 +91,26 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public boolean modifyUserCertification(Long userId, Long acquiredCertificationId, ModifyUserCertificationRequest request) {
+        Optional<AcquiredCertification> optionalUserCertification = acquiredCertificationRepository.findById(acquiredCertificationId);
 
+        if (optionalUserCertification.isPresent()) {
+            AcquiredCertification userCertification = optionalUserCertification.get();
+
+            // Assuming we have a method to check if the certification belongs to the user
+            if (!userCertification.getSiteUser().getUserID().equals(userId)) {
+                return false;
+            }
+
+            userCertification.setExamDate(request.getExamDate());
+            userCertification.setExpireDate(request.getExpireDate());
+            userCertification.setStudyPeriod(request.getStudyPeriod());
+
+            acquiredCertificationRepository.save(userCertification);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
