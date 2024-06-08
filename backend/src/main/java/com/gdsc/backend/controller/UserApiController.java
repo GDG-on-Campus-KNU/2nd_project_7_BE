@@ -1,5 +1,6 @@
 package com.gdsc.backend.controller;
 
+import com.gdsc.backend.domain.CertificationReview;
 import com.gdsc.backend.domain.SiteUser;
 import com.gdsc.backend.dto.*;
 import com.gdsc.backend.service.UserService;
@@ -26,9 +27,15 @@ public class UserApiController {
         return userService.modifyUser(userId, requestDTO);
     }
 
-    @PostMapping("/certification/add")
+    @PostMapping("/certification")
     public AddCertificationResponse addCertification(@RequestBody AddCertificationRequest request) {
         return userService.addCertification(request);
+    }
+
+
+    @PostMapping("/review")
+    public CertificationReview addCertificationReview(@RequestBody AddCertificationReivewRequest request) {
+        return userService.addCertificationReview(request);
     }
 
 }

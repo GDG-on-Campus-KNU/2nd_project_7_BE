@@ -2,10 +2,12 @@ package com.gdsc.backend.service;
 
 import com.gdsc.backend.domain.AcquiredCertification;
 import com.gdsc.backend.domain.Certification;
+import com.gdsc.backend.domain.CertificationReview;
 import com.gdsc.backend.domain.SiteUser;
 import com.gdsc.backend.dto.*;
 import com.gdsc.backend.repository.AcquiredCertificationRepository;
 import com.gdsc.backend.repository.CertificationRepository;
+import com.gdsc.backend.repository.CertificationReviewRepository;
 import com.gdsc.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,9 @@ public class UserService {
     CertificationRepository CertificationRepository;
     @Autowired
     private CertificationRepository certificationRepository;
+    @Autowired
+    private CertificationReviewRepository certificationReviewRepository;
+
 
     public SiteUser save(AddUserRequest request){
         return userRepository.save(request.toEntity());
@@ -62,5 +67,18 @@ public class UserService {
 
         return new AddCertificationResponse(true, userCertification.getCertification().toString(), "Certification added successfully.");
     }
+
+    @Transactional
+    public CertificationReview addCertificationReview(AddCertificationReivewRequest request) {
+        CertificationReview review = new CertificationReview();
+        review.setContent(request.getContent());
+        review.setRating(request.getRating());
+        review.setCreatedAt(request.getCreatedAt());
+        review.setSiteUser(request.getSiteUser());
+        review.setCertification(request.getCertification());
+
+        return certificationReviewRepository.save(review);
+    }
+
 
 }

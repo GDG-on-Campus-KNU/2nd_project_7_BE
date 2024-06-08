@@ -2,7 +2,11 @@ package com.gdsc.backend.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class CertificationReview {
 
@@ -36,6 +40,7 @@ public class CertificationReview {
     }
 
 
+    public CertificationReview() {
 
-
+    }
 }
