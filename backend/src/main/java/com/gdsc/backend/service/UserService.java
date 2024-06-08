@@ -11,6 +11,7 @@ import com.gdsc.backend.repository.CertificationReviewRepository;
 import com.gdsc.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,5 +113,12 @@ public class UserService {
         } else {
             return false;
         }
+    }
+
+    public UserInfoDto getUserInfo(Long userId) {
+        SiteUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        return new UserInfoDto(user.getEmail(), user.getName(), user.getNickname(), user.getBirthDate(), user.getProfileImage());
     }
 }
