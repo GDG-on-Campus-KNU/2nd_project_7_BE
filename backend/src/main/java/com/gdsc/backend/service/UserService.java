@@ -1,9 +1,11 @@
 package com.gdsc.backend.service;
 
+import com.gdsc.backend.domain.AcquiredCertification;
+import com.gdsc.backend.domain.Certification;
 import com.gdsc.backend.domain.SiteUser;
-import com.gdsc.backend.dto.AddUserRequest;
-import com.gdsc.backend.dto.ModifyUserInfoRequest;
-import com.gdsc.backend.dto.ModifyUserResponse;
+import com.gdsc.backend.dto.*;
+import com.gdsc.backend.repository.AcquiredCertificationRepository;
+import com.gdsc.backend.repository.CertificationRepository;
 import com.gdsc.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,12 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
+    private final AcquiredCertificationRepository acquiredCertificationRepository;
+    @Autowired
+    CertificationRepository CertificationRepository;
+    @Autowired
+    private CertificationRepository certificationRepository;
 
     public SiteUser save(AddUserRequest request){
         return userRepository.save(request.toEntity());
@@ -38,6 +46,21 @@ public class UserService {
         } else {
             return new ModifyUserResponse(false, "User not found.");
         }
+    }
+
+    @Transactional
+    public AddCertificationResponse addCertification(AddCertificationRequest requestDTO) {
+        AcquiredCertification userCertification = new AcquiredCertification();
+        Certification certification = certificationRepository.getById(requestDTO.getCertificationId());
+
+        userCertification.setSiteUser(requestDTO.getSiteUser());
+        userCertification.setAcquiredCertificationID(requestDTO.getCertificationId());
+        userCertification.setExamDate(requestDTO.getExamDate());
+        userCertification.setExpireDate(requestDTO.getExpireDate());
+
+        userCertification = acquiredCertificationRepository.save(userCertification);
+
+        return new AddCertificationResponse(true, userCertification.getCertification().toString(), "Certification added successfully.");
     }
 
 }

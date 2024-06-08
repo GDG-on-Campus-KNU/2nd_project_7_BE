@@ -42,4 +42,8 @@ public class Certification {
         this.overview = overview;
         this.examContent = examContent;
     }
+
+    public Certification() {
+
+    }
 }

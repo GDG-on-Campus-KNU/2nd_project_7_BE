@@ -2,9 +2,13 @@ package com.gdsc.backend.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @Entity
 public class AcquiredCertification {
     @Id
@@ -34,5 +38,9 @@ public class AcquiredCertification {
         this.examDate = examDate;
         this.expireDate = expireDate;
         this.studyPeriod = studyPeriod;
+    }
+
+    public AcquiredCertification() {
+
     }
 }

@@ -1,9 +1,7 @@
 package com.gdsc.backend.controller;
 
 import com.gdsc.backend.domain.SiteUser;
-import com.gdsc.backend.dto.AddUserRequest;
-import com.gdsc.backend.dto.ModifyUserInfoRequest;
-import com.gdsc.backend.dto.ModifyUserResponse;
+import com.gdsc.backend.dto.*;
 import com.gdsc.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,11 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RestController
+@RestController("/api/user")
 public class UserApiController {
     private final UserService userService;
 
-    @PostMapping("/api/user")
+    @PostMapping()
     public ResponseEntity<SiteUser> addUser(@RequestBody AddUserRequest request){
         SiteUser savedSiteUser = userService.save(request);
 
@@ -27,4 +25,10 @@ public class UserApiController {
     public ModifyUserResponse modifyUser(@PathVariable Long userId, @RequestBody ModifyUserInfoRequest requestDTO) {
         return userService.modifyUser(userId, requestDTO);
     }
+
+    @PostMapping("/certification/add")
+    public AddCertificationResponse addCertification(@RequestBody AddCertificationRequest request) {
+        return userService.addCertification(request);
+    }
+
 }
