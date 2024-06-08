@@ -38,4 +38,16 @@ public class UserApiController {
         return userService.addCertificationReview(request);
     }
 
+
+
+    @DeleteMapping("/certification")
+    public ResponseEntity<String> deleteCertification(@PathVariable Long certificationId) {
+        boolean isDeleted = userService.deleteCertification(certificationId);
+        if (isDeleted) {
+            return ResponseEntity.ok("Certification deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Certification not found.");
+        }
+    }
+
 }

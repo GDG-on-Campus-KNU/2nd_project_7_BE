@@ -81,4 +81,16 @@ public class UserService {
     }
 
 
+
+    @Transactional
+    public boolean deleteCertification(Long certificationId) {
+        if (certificationRepository.existsById(certificationId)) {
+            certificationRepository.deleteById(certificationId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 }
