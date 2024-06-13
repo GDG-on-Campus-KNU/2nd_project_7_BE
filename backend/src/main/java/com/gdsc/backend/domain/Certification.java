@@ -48,7 +48,4 @@ public class Certification {
         this.examContent = examContent;
     }
 
-    public Certification() {
-
-    }
 }
